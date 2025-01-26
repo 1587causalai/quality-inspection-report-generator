@@ -32,8 +32,12 @@ pip install -r requirements.txt
 ## 使用方法
 
 1. 准备输入文件：
-   - `1.xls`：源数据文件，包含 HEADER、Dimension 和 Sand 工作表
-   - `2.xlsx`：模板文件，包含 WACKER 工作表
+   - 源数据文件（参考 `examples/example_source_data.xls`）：
+     * HEADER 工作表：包含基本信息
+     * Dimension 工作表：包含尺寸数据
+     * Sand 工作表：包含化学元素测试数据
+   - 模板文件（参考 `examples/example_template.xlsx`）：
+     * 包含预设的报告格式
 
 2. 运行脚本：
 ```bash
@@ -44,16 +48,30 @@ python generate_quality_inspection_reports.py
    - 生成的报告将保存为 `2_updated.xlsx`
    - 每个客户的数据将保存在单独的工作表中
 
+## 示例文件
+
+在 `examples` 目录中提供了示例文件：
+
+1. `example_source_data.xls`：源数据文件示例
+   - 展示了正确的数据格式和结构
+   - 包含了所有必需的工作表和字段
+
+2. `example_template.xlsx`：模板文件示例
+   - 展示了标准的报告格式
+   - 包含了所有必需的字段和公式
+
+您可以参考这些示例文件来准备您自己的输入文件。
+
 ## 数据格式要求
 
 ### 输入文件结构
 
-1. `1.xls` 包含：
+1. 源数据文件需要包含：
    - HEADER：基本信息（数量、批准人等）
    - Dimension：尺寸数据和检验日期
    - Sand：化学元素测试数据
 
-2. `2.xlsx` 包含：
+2. 模板文件需要包含：
    - WACKER：报告模板格式
 
 ### 输出报告格式
