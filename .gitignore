@@ -26,6 +26,9 @@ wheels/
 *.xlsx
 *.xlsm
 *.xlsb
+# except for 1.xls and 2.xlsx
+!1.xls
+!2.xlsx
 
 # IDE
 .idea/
