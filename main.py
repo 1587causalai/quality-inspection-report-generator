@@ -2,19 +2,22 @@ import pandas as pd
 from openpyxl import load_workbook
 from datetime import datetime, timedelta
 import os # Added for path manipulation
+import tempfile # Import tempfile
 
 def process_files(file1_path, file2_path, output_filename="generated_report.xlsx"):
     """
     Processes two input Excel files and generates a combined report.
+    Saves the output to a temporary directory to avoid potential permission issues.
 
     Args:
         file1_path (str): Path to the first input Excel file (data source).
         file2_path (str): Path to the second input Excel file (template).
-        output_filename (str): Desired name for the output report file.
+        output_filename (str): Desired *base* name for the output report file (e.g., 'report.xlsx').
+                               The actual path will be in a temp directory.
 
     Returns:
-        str: The path to the generated output Excel file.
-        Returns None if an error occurs during processing.
+        str: The full path to the generated output Excel file in a temporary directory.
+             Returns None if an error occurs during processing.
     """
     try:
         # 读取第一个文件
@@ -149,9 +152,26 @@ def process_files(file1_path, file2_path, output_filename="generated_report.xlsx
         if 'WACKER' in wb.sheetnames:
              del wb['WACKER'] # Remove template if no longer needed
 
-        # 保存修改后的文件
-        wb.save(output_filename)
-        return output_filename # Return the path of the saved file
+        # Create a temporary file path for the output
+        try:
+            temp_dir = tempfile.gettempdir()
+            # Ensure the base output filename is used, not a potentially problematic one from input args
+            safe_output_filename = os.path.basename(output_filename if output_filename else "generated_report.xlsx")
+            # Create a unique temporary file path
+            # Using mkstemp gives more control, but let's try simple join first
+            # _, temp_output_path = tempfile.mkstemp(suffix=".xlsx", prefix="report_", dir=temp_dir)
+            # Let's use a predictable name within the temp dir, might be easier for Gradio/platform
+            temp_output_path = os.path.join(temp_dir, safe_output_filename)
+            
+            print(f"Attempting to save report to temporary path: {temp_output_path}")
+            wb.save(temp_output_path)
+            print(f"Successfully saved report to: {temp_output_path}")
+            return temp_output_path # Return the full path to the temporary file
+        except Exception as save_error:
+            print(f"Error saving workbook to temporary path {temp_output_path}: {save_error}")
+            import traceback
+            print(traceback.format_exc())
+            return None
 
     except FileNotFoundError:
         print(f"Error: Input file not found. Check paths: {file1_path}, {file2_path}")
